@@ -6,9 +6,10 @@ const helmet = require('helmet')
 
 const { sequelize } = require('./models')
 const rootRouter = require('./routes')
-const errorHandler = require('./middlewares/error-handler')
+const { errorHandler } = require('./middlewares')
 
 const app = express()
+const { errorLogger, errorResponder } = errorHandler
 
 app.set('sequelize', sequelize)
 app.set('models', sequelize.models)
@@ -36,8 +37,9 @@ app.use('/', rootRouter)
 
 /**
  * These must be the last middlewares
+ * Order matters!
  */
-app.use(errorHandler.errorLogger)
-app.use(errorHandler.errorResponder)
+app.use(errorLogger)
+app.use(errorResponder)
 
 module.exports = app
