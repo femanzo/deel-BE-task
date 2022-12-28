@@ -25,18 +25,16 @@ const payJobRequest = async (req, res) => {
  ***********************/
 
 /**
- *
- * @param {number} profileId - The id from ether the client or the contractor
- * @returns
+ * @param {number} profileId - The id from ether the client or the contractor profile
+ * @returns {Promise<Job[]>} - The jobs
  */
 const getUserUnpaidJobs = async (profileId) => {
-  const jobs = await Job.findAll({
+  const jobs = await Job.scope('unpaid').findAll({
     include: {
-      model: Contract,
+      model: Contract.scope('active'),
       as: 'contract',
       where: {
         [Op.or]: [{ ClientId: profileId }, { ContractorId: profileId }],
-        status: CONTRACT_STATUS.IN_PROGRESS,
       },
     },
   })
@@ -44,6 +42,10 @@ const getUserUnpaidJobs = async (profileId) => {
   return jobs
 }
 
+/**
+ * @param {number} jobId
+ * @returns
+ */
 const payJob = async (jobId) => {
   const jobs = await Job.findAll({
     where: {
