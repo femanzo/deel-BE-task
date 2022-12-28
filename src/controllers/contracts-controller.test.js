@@ -3,7 +3,8 @@ const assert = require('assert')
 
 const app = require('../app')
 
-describe('ContractsController', () => {
+describe('Contracts Controller', () => {
+  /* TODO: This test should be moved to a separate file */
   it('should return 401 if missing profile_id header', async () => {
     await request(app).get('/contracts/1').expect(401)
   })
