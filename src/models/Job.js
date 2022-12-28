@@ -1,4 +1,5 @@
-const Sequelize = require('sequelize')
+const { Sequelize, Op } = require('sequelize')
+const Contract = require('./Contract')
 
 class Job extends Sequelize.Model {}
 
@@ -22,6 +23,15 @@ module.exports = (sequelize) =>
       },
     },
     {
+      scopes: {
+        unpaid: {
+          where: {
+            paid: {
+              [Op.or]: [false, null],
+            },
+          },
+        },
+      },
       sequelize,
       modelName: 'Job',
     }
