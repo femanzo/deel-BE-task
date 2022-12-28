@@ -49,4 +49,11 @@ describe('ContractsController', () => {
         })
       })
   })
+
+  it('should return plain text error if Accept specified', async () => {
+    await request(app)
+      .get('/contracts')
+      .set('Accept', 'text/plain')
+      .expect('Content-Type', /plain/)
+  })
 })
