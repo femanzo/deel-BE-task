@@ -14,6 +14,13 @@ module.exports = (sequelize) =>
       },
     },
     {
+      scopes: {
+        active: {
+          where: {
+            status: 'in_progress',
+          },
+        },
+      },
       sequelize,
       modelName: 'Contract',
     }
