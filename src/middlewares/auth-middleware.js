@@ -8,6 +8,7 @@ module.exports = async (req, res, next) => {
   if (!profile_id) {
     const missingProfileIdError = new Error('Missing profile_id header')
     missingProfileIdError.statusCode = 401
+
     return next(missingProfileIdError)
   }
 
@@ -21,7 +22,13 @@ module.exports = async (req, res, next) => {
       return next(profileNotFoundError)
     }
 
+    /**
+     * Now the user is authenticated,
+     * we add the profile to the req object
+     * so we can use it later
+     */
     req.profile = profile
+
     return next()
   } catch (err) {
     return next(err)
