@@ -1,7 +1,6 @@
 const { Op } = require('sequelize')
 
 const { Contract } = require('../models')
-const { CONTRACT_STATUS } = require('../constants')
 
 /***********************
  * API exposed functions
@@ -44,7 +43,7 @@ const getUserContractById = async (profileId, contractId) => {
       id: contractId,
       [Op.or]: [{ ClientId: profileId }, { ContractorId: profileId }],
     },
-    include: ['client', 'contractor'],
+    include: ['Client', 'Contractor'],
   })
 
   if (!contract) {
@@ -61,12 +60,11 @@ const getUserContractById = async (profileId, contractId) => {
  * @returns {Promise<Contract[]>} - The contracts that belong to the profile
  */
 const getUserNonTerminantedContracts = async (profileId) => {
-  const contracts = await Contract.findAll({
+  const contracts = await Contract.scope('pending').findAll({
     where: {
       [Op.or]: [{ ClientId: profileId }, { ContractorId: profileId }],
-      status: { [Op.not]: CONTRACT_STATUS.TERMINATED },
     },
-    include: ['client', 'contractor'],
+    include: ['Client', 'Contractor'],
   })
 
   return contracts
