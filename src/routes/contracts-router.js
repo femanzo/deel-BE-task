@@ -4,7 +4,7 @@ const { authMiddleware } = require('../middlewares')
 
 const router = Router()
 
-router.get('/', authMiddleware, contractsController.getUserNonTerminantedContracts)
-router.get('/:id', authMiddleware, contractsController.getUserContractById)
+router.get('/', authMiddleware, contractsController.getUserNonTerminantedContractsRequest)
+router.get('/:id', authMiddleware, contractsController.getUserContractByIdRequest)
 
 module.exports = router
