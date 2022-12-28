@@ -16,9 +16,7 @@ module.exports = async (req, res, next) => {
   try {
     const profile = await Profile.findByPk(profile_id)
     if (!profile) {
-      const profileNotFoundError = new Error(
-        `Profile with id ${profile_id} could not be found`
-      )
+      const profileNotFoundError = new Error(`Profile with id ${profile_id} could not be found`)
       profileNotFoundError.statusCode = 401
       return next(profileNotFoundError)
     }
