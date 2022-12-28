@@ -1,3 +1,4 @@
-const getProfile = require('./get-profile')
-
-module.exports = { getProfile }
+module.exports = {
+  authMiddleware: require('./auth-middleware'),
+  errorHandler: require('./error-handler'),
+}
