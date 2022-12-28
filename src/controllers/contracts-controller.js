@@ -9,12 +9,11 @@ const getUserContractById = async (req, res, next) => {
       id,
       [Op.or]: [{ ClientId: req.profile.id }, { ContractorId: req.profile.id }],
     },
+    include: ['client', 'contractor'],
   })
 
   if (!contract) {
-    const contractNotFoundErr = new Error(
-      `Contract with id ${id} could not be found`
-    )
+    const contractNotFoundErr = new Error(`Contract with id ${id} could not be found`)
     contractNotFoundErr.statusCode = 404
     return next(contractNotFoundErr)
   }
@@ -29,6 +28,7 @@ const getUserNonTerminantedContracts = async (req, res) => {
       [Op.or]: [{ ClientId: req.profile.id }, { ContractorId: req.profile.id }],
       status: { [Op.not]: 'terminated' },
     },
+    include: ['client', 'contractor'],
   })
 
   return res.json(contracts)
