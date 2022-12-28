@@ -13,7 +13,7 @@
   },
   "scripts": {
     "start": "nodemon ./src/server.js",
-    "seed": "node ./scripts/seedDb.js",
+    "seed": "node ./scripts/seed-db.js",
     "test": "jest"
   },
   "devDependencies": {
