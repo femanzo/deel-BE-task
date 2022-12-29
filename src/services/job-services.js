@@ -10,7 +10,7 @@ const { Profile, Job, Contract } = sequelize.models
  * The amount should be moved from the client's balance to the contractor balance.
  * @param {number} clientId - The id from the client
  * @param {number} jobId - The id from the job
- * @returns {Promise<Job>} - The updated paid job
+ * @returns {Promise<{job: Job, client: Profile, contractor: Profile}>}
  */
 const payJob = async (clientId, jobId) => {
   try {
@@ -78,7 +78,7 @@ const payJob = async (clientId, jobId) => {
  * Return the total amount of jobs to pay for a user
  * @param {number} clientId
  * @param {transaction} seequelize transaction
- * @returns {number}
+ * @returns {Promise<number>} - The total amount
  */
 const getTotalOfJobsToPay = async (clientId, transaction = null) => {
   if (!clientId) {
