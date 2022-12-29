@@ -1,3 +1,7 @@
+const {
+  profileServices: { depositFunds },
+} = require('../services')
+
 const depositFundsRequest = async (req, res, next) => {
   const { userId } = req.params
   const { amount } = req.body
