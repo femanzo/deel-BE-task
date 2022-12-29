@@ -8,7 +8,8 @@ async function seed() {
   await Profile.sync({ force: true })
   await Contract.sync({ force: true })
   await Job.sync({ force: true })
-  //insert data
+
+  // insert data
   await Promise.all([
     Profile.create({
       id: 1,
