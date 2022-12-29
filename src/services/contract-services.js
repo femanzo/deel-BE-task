@@ -17,6 +17,9 @@ const getUserContractById = async (profileId, contractId) => {
       id: contractId,
       [Op.or]: [{ ClientId: profileId }, { ContractorId: profileId }],
     },
+    attributes: {
+      exclude: ['ClientId', 'ContractorId'],
+    },
     include: ['Client', 'Contractor'],
   })
 
@@ -34,6 +37,9 @@ const getUserNonTerminantedContracts = async (profileId) => {
   const contracts = await Contract.scope('pending').findAll({
     where: {
       [Op.or]: [{ ClientId: profileId }, { ContractorId: profileId }],
+    },
+    attributes: {
+      exclude: ['ClientId', 'ContractorId'],
     },
     include: ['Client', 'Contractor'],
   })
