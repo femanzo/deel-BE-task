@@ -1,11 +1,7 @@
-const { Op } = require('sequelize')
+const {
+  contractServices: { getUserContractById, getUserNonTerminantedContracts },
+} = require('../services')
 
-const { Contract } = require('../models')
-const { assertRecordFound } = require('../utils')
-
-/***********************
- * API exposed functions
- ***********************/
 const getUserContractByIdRequest = async (req, res, next) => {
   const { id: contractId } = req.params
   const { id: profileId } = req.profile
