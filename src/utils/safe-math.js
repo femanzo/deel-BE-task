@@ -1,7 +1,7 @@
 const Decimal = require('decimal.js')
 
 /**
- * This function adds two numbers avoiding floating point errors
+ * Adds two numbers avoiding floating point errors
  * @param {number} a
  * @param {number} b
  * @returns {number} a + b
@@ -11,7 +11,7 @@ function safeAdd(a, b) {
 }
 
 /**
- * This function subtracts two numbers avoiding floating point errors
+ * Subtracts two numbers avoiding floating point errors
  * @param {number} a
  * @param {number} b
  * @returns {number} a - b
@@ -21,7 +21,7 @@ function safeSubtract(a, b) {
 }
 
 /**
- * This function multiplies two numbers avoiding floating point errors
+ * Multiplies two numbers avoiding floating point errors
  * @param {number} a
  * @param {number} b
  * @returns {number} a * b
