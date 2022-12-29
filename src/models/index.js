@@ -5,10 +5,17 @@ const sequelize = new Sequelize({
   storage: './database.sqlite3',
 })
 
-const Contract = require('./Contract')(sequelize)
-const Job = require('./Job')(sequelize)
-const Profile = require('./Profile')(sequelize)
+/**
+ * Execute models initializers
+ */
+require('./Contract')(sequelize)
+require('./Job')(sequelize)
+require('./Profile')(sequelize)
 
+/**
+ * Relationships definition
+ */
+const { Profile, Contract, Job } = sequelize.models
 Profile.hasMany(Contract, { as: 'Contractor', foreignKey: 'ContractorId' })
 Contract.belongsTo(Profile, { as: 'Contractor' })
 Profile.hasMany(Contract, { as: 'Client', foreignKey: 'ClientId' })
@@ -16,9 +23,4 @@ Contract.belongsTo(Profile, { as: 'Client' })
 Contract.hasMany(Job)
 Job.belongsTo(Contract)
 
-module.exports = {
-  sequelize,
-  Contract,
-  Job,
-  Profile,
-}
+module.exports = { sequelize }
