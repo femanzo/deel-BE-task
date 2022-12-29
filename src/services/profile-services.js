@@ -1,4 +1,5 @@
 const { sequelize } = require('../models')
+const { getTotalOfJobsToPay } = require('./job-services')
 const { safeMultiply, safeAdd, safeSubtract, assertRecordFound } = require('../utils')
 
 const { Profile } = sequelize.models
