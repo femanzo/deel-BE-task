@@ -1,9 +1,8 @@
 const { Router } = require('express')
-const { balancesController } = require('../controllers')
-const { authMiddleware } = require('../middlewares')
+const { profilesController } = require('../controllers')
 
 const router = Router()
 
-router.post('/deposit/:userId', authMiddleware, balancesController.depositFunds)
+router.post('/deposit/:userId', profilesController.depositFundsRequest)
 
 module.exports = router
