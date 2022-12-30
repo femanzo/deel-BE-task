@@ -16,7 +16,9 @@ const {
  */
 const getProfileById = async (profileId, transaction = null) => {
   if (!profileId) {
-    throw new Error('profileId is required')
+    const profileIdMissingError = new Error('profileId is required')
+    profileIdMissingError.statusCode = 400
+    throw profileIdMissingError
   }
 
   const profile = await Profile.findByPk(profileId, { transaction })
@@ -46,13 +48,14 @@ const getJobById = async (jobId, clientId, transaction = null) => {
 }
 
 /**
- * Get a contract by id that belongs to the profile
+ * Get a contract by id that belongs to the client
  * @param {number} profileId - The id from ether the client or the contractor profile
  * @param {number} contractId - The contract Id
  * @param {Sequelize.Transaction} transaction - The transaction to use
  * @returns {Promise<Contract>} - The contract
+ * @throws {Error} - If contract is not found
  */
-const getUserContractById = async (profileId, contractId, transaction = null) => {
+const getProfileContractById = async (profileId, contractId, transaction = null) => {
   if (!profileId) throw new Error('profileId is required')
   if (!contractId) throw new Error('contractId is required')
 
@@ -60,9 +63,6 @@ const getUserContractById = async (profileId, contractId, transaction = null) =>
     where: {
       id: contractId,
       [Op.or]: [{ ClientId: profileId }, { ContractorId: profileId }],
-    },
-    attributes: {
-      exclude: ['ClientId', 'ContractorId'],
     },
     include: ['Client', 'Contractor'],
     transaction,
@@ -94,7 +94,7 @@ const getUserNonTerminantedContracts = async (profileId) => {
 
 module.exports = {
   getProfileById,
-  getUserContractById,
+  getProfileContractById,
   getJobById,
   getUserNonTerminantedContracts,
 }

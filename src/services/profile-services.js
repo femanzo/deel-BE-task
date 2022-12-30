@@ -1,8 +1,10 @@
 const { sequelize } = require('../db')
 const { safeMultiply, safeAdd, safeSubtract, assertRecordFound } = require('../utils')
 
+const { getProfileById } = require('./db-services')
+
 const {
-  models: { Profile, Contract, Job },
+  models: { Contract, Job },
 } = sequelize
 
 /**
@@ -15,16 +17,13 @@ const {
  * @throws {Error} - If the deposit amount is greater than the max amount
  */
 const depositFunds = async (userId, amount) => {
-  if (!userId || !amount) {
-    throw new Error('Invalid parameters')
-  }
+  if (!userId || !amount) throw new Error('Invalid parameters')
 
   try {
     const updatedProfile = await sequelize.transaction(async (t) => {
       const totalPendingAmount = await getTotalOfJobsToPay(userId, t)
 
-      const profile = await Profile.findByPk(userId, { transaction: t })
-      assertRecordFound(profile, 'Profile', userId)
+      const profile = await getProfileById(userId, t)
 
       const updatedBalance = safeAdd(profile.balance, amount)
       const maxAmount = safeMultiply(totalPendingAmount, 1.25)
@@ -33,16 +32,16 @@ const depositFunds = async (userId, amount) => {
         const maxDepositAmount = safeSubtract(maxAmount, profile.balance)
 
         let maxDepositErrorMsg = `You cannot deposit more than $${maxDepositAmount}`
-        if (maxDepositAmount < 0) {
-          maxDepositErrorMsg = `You have reached the deposit limit, please pay your pending jobs first`
+        if (maxDepositAmount <= 0) {
+          maxDepositErrorMsg = `You have reached the deposit limit`
         }
+
         const maxDepositError = new Error(maxDepositErrorMsg)
         maxDepositError.statusCode = 400
         throw maxDepositError
       }
 
-      profile.balance = updatedBalance
-      await profile.save({ transaction: t })
+      await addToBalance(userId, amount, t)
 
       return { profile, totalPendingAmount }
     })
@@ -54,18 +53,79 @@ const depositFunds = async (userId, amount) => {
 }
 
 /**
+ * Add funds to a profile's balance
+ * @param {number} profileId
+ * @param {number} amount
+ * @param {Sequelize.Transaction} transaction
+ * @returns {Promise<Profile>}
+ */
+const addToBalance = async (profileId, amount, transaction = null) => {
+  if (!profileId) throw new Error('profileId required')
+  if (!amount || amount < 0) throw new Error('invalid amount')
+
+  const profile = await getProfileById(profileId, transaction)
+  profile.balance = safeAdd(profile.balance, amount)
+  await profile.save({ transaction })
+
+  return profile
+}
+
+/**
+ * Remove funds from a profile's balance
+ * @param {number} profileId
+ * @param {number} amount
+ * @param {Sequelize.Transaction} transaction
+ * @returns {Promise<Profile>}
+ */
+const removeFromBalance = async (profileId, amount, transaction = null) => {
+  if (!profileId) throw new Error('profileId required')
+  if (!amount || amount < 0) throw new Error('invalid amount')
+
+  const profile = await getProfileById(profileId, transaction)
+  profile.balance = safeSubtract(profile.balance, amount)
+
+  if (profile.balance < 0) {
+    const insufficientFundsError = new Error('Insufficient funds')
+    insufficientFundsError.statusCode = 400
+    throw insufficientFundsError
+  }
+
+  await profile.save({ transaction })
+
+  return profile
+}
+
+/**
+ * transfer funds from a profile's to another
+ * @param {number} fromProfileId
+ * @param {number} toProfileId
+ * @param {number} amount
+ * @param {Sequelize.Transaction} transaction
+ * @returns {Promise<{from: Profile, to: Profile}>}
+ */
+const transferFunds = async (fromProfileId, toProfileId, amount, transaction) => {
+  if (!fromProfileId) throw new Error('fromProfileId required')
+  if (!toProfileId) throw new Error('toProfileId required')
+  if (!amount || amount < 0) throw new Error('invalid amount')
+  if (!transaction) throw new Error('transaction required')
+
+  const from = await removeFromBalance(fromProfileId, amount, transaction)
+  const to = await addToBalance(toProfileId, amount, transaction)
+
+  return { from, to }
+}
+
+/**
  * Return the total amount of jobs to pay for a user
  * @param {number} clientId
  * @param {transaction} seequelize transaction
  * @returns {Promise<number>} - The total amount
  */
 const getTotalOfJobsToPay = async (clientId, transaction = null) => {
-  if (!clientId) {
-    throw new Error('clientId required')
-  }
+  if (!clientId) throw new Error('clientId required')
 
   const [{ total }] = await Contract.findAll({
-    where: { clientId },
+    where: { ClientId: clientId },
     include: [
       {
         model: Job.scope('unpaid'),
@@ -77,10 +137,13 @@ const getTotalOfJobsToPay = async (clientId, transaction = null) => {
     transaction,
   })
 
-  return total
+  return total || 0
 }
 
 module.exports = {
+  addToBalance,
+  removeFromBalance,
+  transferFunds,
   depositFunds,
   getTotalOfJobsToPay,
 }

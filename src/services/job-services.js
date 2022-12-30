@@ -1,9 +1,9 @@
 const { Op } = require('sequelize')
 
 const { sequelize } = require('../db')
-const { safeAdd, safeSubtract } = require('../utils')
 
-const { getJobById, getProfileById, getUserContractById } = require('./db-services')
+const { getJobById, getClientContractById } = require('./db-services')
+const { transferFunds } = require('./profile-services')
 
 const {
   models: { Job, Contract },
@@ -21,6 +21,8 @@ const payJob = async (clientId, jobId) => {
     const result = await sequelize.transaction(async (t) => {
       const job = await getJobById(jobId, clientId, t)
 
+      const contract = await getClientContractById(clientId, job.ContractId, t)
+
       // paid is not null, false, 0 or undefined
       if (job.paid) {
         const jobPaidError = new Error(`Job #${jobId} was already paid`)
@@ -28,29 +30,19 @@ const payJob = async (clientId, jobId) => {
         throw jobPaidError
       }
 
-      const contract = await getUserContractById(clientId, job.ContractId, t)
-      const client = await getProfileById(contract.ClientId, t)
-      const contractor = await getProfileById(contract.ContractorId, t)
+      const { from, to } = await transferFunds(
+        contract.ClientId,
+        contract.ContractorId,
+        job.price,
+        t
+      )
 
-      client.balance = safeSubtract(client.balance, job.price)
-
-      if (client.balance < 0) {
-        const unsuficientBalanceError = new Error(
-          `Not enough balance to pay for this job, you need at least $${job.price} to pay for this job`
-        )
-        unsuficientBalanceError.statusCode = 400
-        throw unsuficientBalanceError
-      }
-
-      contractor.balance = safeAdd(contractor.balance, job.price)
       job.paid = true
       job.paymentDate = new Date()
 
       await job.save({ transaction: t })
-      await client.save({ transaction: t })
-      await contractor.save({ transaction: t })
 
-      return { job, client, contractor }
+      return { job, from: from.balance, to: to.balance }
     })
 
     return result
