@@ -2,7 +2,7 @@ const {
   dbServices: { getProfileContractById, getUserNonTerminantedContracts },
 } = require('../services')
 
-const getClientContractByIdRequest = async (req, res, next) => {
+const getProfileContractByIdRequest = async (req, res, next) => {
   const { id: contractId } = req.params
   const { id: profileId } = req.profile
 
@@ -26,6 +26,6 @@ const getUserNonTerminantedContractsRequest = async (req, res, next) => {
 }
 
 module.exports = {
-  getClientContractByIdRequest,
+  getProfileContractByIdRequest,
   getUserNonTerminantedContractsRequest,
 }
