@@ -31,7 +31,10 @@
 			"response": []
 		},
 		{
-			"name": "Contracts By ID",
+			"name": "Contract By ID",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {}
+			},
 			"request": {
 				"method": "GET",
 				"header": [
@@ -43,13 +46,13 @@
 					}
 				],
 				"url": {
-					"raw": "{{url}}/contracts/2",
+					"raw": "{{url}}/contracts/1",
 					"host": [
 						"{{url}}"
 					],
 					"path": [
 						"contracts",
-						"2"
+						"1"
 					]
 				}
 			},
@@ -87,19 +90,19 @@
 				"header": [
 					{
 						"key": "profile_id",
-						"value": "2",
+						"value": "1",
 						"description": "Fake Auth Handler for Deel BE Task",
 						"type": "text"
 					}
 				],
 				"url": {
-					"raw": "{{url}}/jobs/4/pay",
+					"raw": "{{url}}/jobs/1/pay",
 					"host": [
 						"{{url}}"
 					],
 					"path": [
 						"jobs",
-						"4",
+						"1",
 						"pay"
 					]
 				}
@@ -110,10 +113,17 @@
 			"name": "Deposit",
 			"request": {
 				"method": "POST",
-				"header": [],
+				"header": [
+					{
+						"key": "profile_id",
+						"value": "1",
+						"description": "Fake Auth Handler for Deel BE Task",
+						"type": "text"
+					}
+				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"amount\": 2\r\n}",
+					"raw": "{\r\n    \"amount\": 10\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -121,14 +131,21 @@
 					}
 				},
 				"url": {
-					"raw": "{{url}}/balances/deposit/2",
+					"raw": "{{url}}/balances/deposit/1",
 					"host": [
 						"{{url}}"
 					],
 					"path": [
 						"balances",
 						"deposit",
-						"2"
+						"1"
+					],
+					"query": [
+						{
+							"key": "profile_id",
+							"value": "1",
+							"disabled": true
+						}
 					]
 				}
 			},
@@ -140,7 +157,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{url}}/admin/best-profession?start=2020-07-10&end=2021-08-11",
+					"raw": "{{url}}/admin/best-profession?start=2010-08-11&end=2022-08-12",
 					"host": [
 						"{{url}}"
 					],
@@ -151,11 +168,11 @@
 					"query": [
 						{
 							"key": "start",
-							"value": "2020-07-10"
+							"value": "2010-08-11"
 						},
 						{
 							"key": "end",
-							"value": "2021-08-11"
+							"value": "2022-08-12"
 						}
 					]
 				}
@@ -168,7 +185,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{url}}/admin/best-clients?start=2020-01-01&end=2021-12-31&limit=2",
+					"raw": "{{url}}/admin/best-clients?start=2010&end=2030",
 					"host": [
 						"{{url}}"
 					],
@@ -179,15 +196,11 @@
 					"query": [
 						{
 							"key": "start",
-							"value": "2020-01-01"
+							"value": "2010"
 						},
 						{
 							"key": "end",
-							"value": "2021-12-31"
-						},
-						{
-							"key": "limit",
-							"value": "2"
+							"value": "2030"
 						}
 					]
 				}
