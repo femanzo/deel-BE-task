@@ -4,4 +4,5 @@
  */
 module.exports = {
   coverageProvider: 'v8',
+  globalSetup: './scripts/jest-global-setup.js',
 }
