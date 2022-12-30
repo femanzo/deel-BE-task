@@ -21,6 +21,9 @@ const getBestClients = async (startDate, endDate, limit = 2) => {
     throw invalidTimeRangeError
   }
 
+  // prevents wrong limit values from crashing the server
+  if (Number.isNaN(Number(limit))) limit = 2
+
   const clientPayments = await Profile.findAll({
     attributes: [
       'id',
