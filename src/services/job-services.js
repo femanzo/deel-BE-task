@@ -2,7 +2,7 @@ const { Op } = require('sequelize')
 
 const { sequelize } = require('../db')
 
-const { getJobById, getClientContractById } = require('./db-services')
+const { getJobById, getProfileContractById } = require('./db-services')
 const { transferFunds } = require('./profile-services')
 
 const {
@@ -21,7 +21,7 @@ const payJob = async (clientId, jobId) => {
     const result = await sequelize.transaction(async (t) => {
       const job = await getJobById(jobId, clientId, t)
 
-      const contract = await getClientContractById(clientId, job.ContractId, t)
+      const contract = await getProfileContractById(clientId, job.ContractId, t)
 
       // paid is not null, false, 0 or undefined
       if (job.paid) {
@@ -30,19 +30,14 @@ const payJob = async (clientId, jobId) => {
         throw jobPaidError
       }
 
-      const { from, to } = await transferFunds(
-        contract.ClientId,
-        contract.ContractorId,
-        job.price,
-        t
-      )
+      await transferFunds(contract.ClientId, contract.ContractorId, job.price, t)
 
       job.paid = true
       job.paymentDate = new Date()
 
       await job.save({ transaction: t })
 
-      return { job, from: from.balance, to: to.balance }
+      return job
     })
 
     return result
