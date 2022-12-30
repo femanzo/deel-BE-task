@@ -1,26 +1,25 @@
 const { Op } = require('sequelize')
 
-const { sequelize } = require('../models')
-const { safeAdd, safeSubtract, assertRecordFound } = require('../utils')
+const { sequelize } = require('../db')
+const { safeAdd, safeSubtract } = require('../utils')
 
-const { Profile, Job, Contract } = sequelize.models
+const { getJobById, getProfileById, getUserContractById } = require('./db-services')
+
+const {
+  models: { Job, Contract },
+} = sequelize
 
 /**
  * Pay for a job, a client can only pay if his balance >= the amount to pay.
  * The amount should be moved from the client's balance to the contractor balance.
- * @param {number} clientId - The id from the client
- * @param {number} jobId - The id from the job
+ * @param {number} clientId - The id of the client
+ * @param {number} jobId - The id of the job
  * @returns {Promise<{job: Job, client: Profile, contractor: Profile}>}
  */
 const payJob = async (clientId, jobId) => {
   try {
     const result = await sequelize.transaction(async (t) => {
-      const job = await Job.findByPk(jobId, {
-        where: { ClientId: clientId },
-        transaction: t,
-      })
-
-      assertRecordFound(job, 'Job', jobId)
+      const job = await getJobById(jobId, clientId, t)
 
       // paid is not null, false, 0 or undefined
       if (job.paid) {
@@ -29,23 +28,9 @@ const payJob = async (clientId, jobId) => {
         throw jobPaidError
       }
 
-      const contract = await Contract.findByPk(job.ContractId, {
-        transaction: t,
-      })
-
-      assertRecordFound(contract, 'Contract', job.ContractId)
-
-      const client = await Profile.findByPk(contract.ClientId, {
-        transaction: t,
-      })
-
-      assertRecordFound(client, 'Client', contract.ClientId)
-
-      const contractor = await Profile.findByPk(contract.ContractorId, {
-        transaction: t,
-      })
-
-      assertRecordFound(contractor, 'Contractor', contract.ContractorId)
+      const contract = await getUserContractById(clientId, job.ContractId, t)
+      const client = await getProfileById(contract.ClientId, t)
+      const contractor = await getProfileById(contract.ContractorId, t)
 
       client.balance = safeSubtract(client.balance, job.price)
 
@@ -75,33 +60,6 @@ const payJob = async (clientId, jobId) => {
 }
 
 /**
- * Return the total amount of jobs to pay for a user
- * @param {number} clientId
- * @param {transaction} seequelize transaction
- * @returns {Promise<number>} - The total amount
- */
-const getTotalOfJobsToPay = async (clientId, transaction = null) => {
-  if (!clientId) {
-    throw new Error('clientId required')
-  }
-
-  const [{ total }] = await Contract.findAll({
-    where: { clientId },
-    include: [
-      {
-        model: Job.scope('unpaid'),
-        attributes: [],
-      },
-    ],
-    raw: true,
-    attributes: [[sequelize.fn('sum', sequelize.col('price')), 'total']],
-    transaction,
-  })
-
-  return total
-}
-
-/**
  * Get all unpaid jobs for a user (either a client or contractor), for active contracts only.
  * @param {number} profileId - The id from either the client or the contractor profile
  * @returns {Promise<Job[]>} - The jobs
@@ -122,5 +80,4 @@ const getUserUnpaidJobs = async (profileId) => {
 module.exports = {
   payJob,
   getUserUnpaidJobs,
-  getTotalOfJobsToPay,
 }

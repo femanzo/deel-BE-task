@@ -1,3 +1,7 @@
+const {
+  dbServices: { getProfileById },
+} = require('../services')
+
 /*
  * Check for valid profile_id in header
  * Add a profile to the request object if it exists
@@ -12,10 +16,8 @@ module.exports = async (req, res, next) => {
     return next(missingProfileIdError)
   }
 
-  const { Profile } = req.app.get('models')
-
   try {
-    const profile = await Profile.findByPk(profile_id)
+    const profile = await getProfileById(profile_id)
     if (!profile) {
       const profileNotFoundError = new Error(`Profile with id ${profile_id} could not be found`)
       profileNotFoundError.statusCode = 401

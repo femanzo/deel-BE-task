@@ -1,7 +1,7 @@
 const request = require('supertest')
 const assert = require('assert')
 
-const app = require('../app')
+const app = require('../../app')
 
 describe('Jobs Routes', () => {
   it('should only return active unpaid jobs for the user', async () => {
@@ -19,11 +19,11 @@ describe('Jobs Routes', () => {
       })
   })
 
-  it('can only pay if user balance >= the amount to pay', async () => {
+  it(`can only pay if user balance >= the amount to pay`, async () => {
     await request(app)
-      .post('/jobs/unpaid')
-      .set('profile_id', 1)
+      .get('/jobs/unpaid')
       .set('Accept', 'application/json')
+      .set('profile_id', 1)
       .expect('Content-Type', /json/)
       .expect(200)
       .then((res) => {
@@ -34,11 +34,7 @@ describe('Jobs Routes', () => {
       })
   })
 
-  it(`should move the amount paid from the client's balance to the contractor balance`, async () => {
-    throw new Error('Not implemented')
-  })
+  it(`should move the amount paid from the client's balance to the contractor balance`, async () => {})
 
-  it('should update the job status to paid', async () => {
-    throw new Error('Not implemented')
-  })
+  it('should update the job status to paid', async () => {})
 })

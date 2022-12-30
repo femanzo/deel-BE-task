@@ -1,14 +1,18 @@
-const { sequelize } = require('../models')
-const { getTotalOfJobsToPay } = require('./job-services')
+const { sequelize } = require('../db')
 const { safeMultiply, safeAdd, safeSubtract, assertRecordFound } = require('../utils')
 
-const { Profile } = sequelize.models
+const {
+  models: { Profile, Contract, Job },
+} = sequelize
 
 /**
  * Deposit funds to a client's profile
  * @param {number} userId
  * @param {number} amount
  * @returns {Promise<{profile: Profile, totalPendingAmount: number}>}
+ * @throws {Error} - If userId is not provided
+ * @throws {Error} - If amount is invalid
+ * @throws {Error} - If the deposit amount is greater than the max amount
  */
 const depositFunds = async (userId, amount) => {
   if (!userId || !amount) {
@@ -49,6 +53,34 @@ const depositFunds = async (userId, amount) => {
   }
 }
 
+/**
+ * Return the total amount of jobs to pay for a user
+ * @param {number} clientId
+ * @param {transaction} seequelize transaction
+ * @returns {Promise<number>} - The total amount
+ */
+const getTotalOfJobsToPay = async (clientId, transaction = null) => {
+  if (!clientId) {
+    throw new Error('clientId required')
+  }
+
+  const [{ total }] = await Contract.findAll({
+    where: { clientId },
+    include: [
+      {
+        model: Job.scope('unpaid'),
+        attributes: [],
+      },
+    ],
+    raw: true,
+    attributes: [[sequelize.fn('sum', sequelize.col('price')), 'total']],
+    transaction,
+  })
+
+  return total
+}
+
 module.exports = {
   depositFunds,
+  getTotalOfJobsToPay,
 }

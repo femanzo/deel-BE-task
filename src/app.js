@@ -4,7 +4,7 @@ const compression = require('compression')
 const cors = require('cors')
 const helmet = require('helmet')
 
-const { sequelize } = require('./models')
+const { sequelize } = require('./db')
 const rootRouter = require('./routes')
 const { errorHandler } = require('./middlewares')
 
@@ -12,7 +12,6 @@ const app = express()
 const { errorLogger, errorResponder } = errorHandler
 
 app.set('sequelize', sequelize)
-app.set('models', sequelize.models)
 
 /**
  * Keep it safe!

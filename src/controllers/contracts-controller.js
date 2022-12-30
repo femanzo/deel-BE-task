@@ -1,5 +1,5 @@
 const {
-  contractServices: { getUserContractById, getUserNonTerminantedContracts },
+  dbServices: { getUserContractById, getUserNonTerminantedContracts },
 } = require('../services')
 
 const getUserContractByIdRequest = async (req, res, next) => {

@@ -1,9 +1,11 @@
 const { Op } = require('sequelize')
 
-const { sequelize } = require('../models')
+const { sequelize } = require('../db')
 const { isValidTimeRange } = require('../utils')
 
-const { Contract, Job, Profile } = sequelize.models
+const {
+  models: { Contract, Job, Profile },
+} = sequelize
 
 /**
  * Get a list of the top paying clients

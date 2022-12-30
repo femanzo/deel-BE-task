@@ -1,6 +1,11 @@
+const profileServices = require('./profile-services')
+const jobServices = require('./job-services')
+const adminServices = require('./admin-services')
+const dbServices = require('./db-services')
+
 module.exports = {
-  jobServices: require('./job-services'),
-  profileServices: require('./profile-services'),
-  adminServices: require('./admin-services'),
-  contractServices: require('./contract-services'),
+  profileServices,
+  jobServices,
+  adminServices,
+  dbServices,
 }

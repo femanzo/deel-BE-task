@@ -1,7 +1,6 @@
 const request = require('supertest')
-const assert = require('assert')
 
-const app = require('../app')
+const app = require('../../app')
 
 describe('Balances Routes', () => {
   describe('POST /balances/deposit/:userId', () => {
