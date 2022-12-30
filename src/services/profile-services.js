@@ -41,9 +41,9 @@ const depositFunds = async (userId, amount) => {
         throw maxDepositError
       }
 
-      await addToBalance(userId, amount, t)
+      const { balance } = await addToBalance(userId, amount, t)
 
-      return { profile, totalPendingAmount }
+      return { message: `$${amount} deposited successfully, your new balance is ${balance}` }
     })
 
     return updatedProfile

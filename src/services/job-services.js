@@ -21,7 +21,15 @@ const payJob = async (clientId, jobId) => {
     const result = await sequelize.transaction(async (t) => {
       const job = await getJobById(jobId, clientId, t)
 
-      const contract = await getProfileContractById(clientId, job.ContractId, t)
+      const contract = await getProfileContractById(clientId, job.ContractId, t).catch((err) => {
+        /*
+         fix for possible security issue,
+         this would leak the existence of a contract and its id
+         */
+        const contractNotFoundError = new Error('Contract not found')
+        contractNotFoundError.statusCode = 404
+        throw contractNotFoundError
+      })
 
       // paid is not null, false, 0 or undefined
       if (job.paid) {
