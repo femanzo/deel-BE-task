@@ -2,12 +2,9 @@ const {
   sequelize: {
     models: { Profile, Contract, Job },
   },
-  sequelize,
 } = require('../src/db')
 
 /* WARNING THIS WILL DROP THE CURRENT DATABASE */
-seed()
-
 async function seed() {
   // create tables
   await Profile.sync({ force: true })
@@ -233,3 +230,5 @@ async function seed() {
     }),
   ])
 }
+
+module.exports = { seed }
