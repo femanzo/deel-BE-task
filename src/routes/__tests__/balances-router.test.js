@@ -36,7 +36,7 @@ describe('Balances Routes', () => {
         })
         .expect(400)
         .then((res) => {
-          expect(res.body).toHaveProperty('message', 'You cannot deposit more than $271.39')
+          expect(res.body).toHaveProperty('message', 'You have reached the deposit limit')
         })
     })
   })
