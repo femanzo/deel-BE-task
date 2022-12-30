@@ -33,8 +33,4 @@ describe('Jobs Routes', () => {
         })
       })
   })
-
-  it(`should move the amount paid from the client's balance to the contractor balance`, async () => {})
-
-  it('should update the job status to paid', async () => {})
 })

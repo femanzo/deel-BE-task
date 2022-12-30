@@ -1,10 +1,10 @@
 const {
-  dbServices: { getClientContractById, getUserNonTerminantedContracts },
+  dbServices: { getProfileContractById, getUserNonTerminantedContracts },
 } = require('..')
 
-describe('getClientContractById', () => {
+describe('getProfileContractById', () => {
   it('should return the contract if it belongs to the user', async () => {
-    await getClientContractById(1, 1).then((contract) => {
+    await getProfileContractById(1, 1).then((contract) => {
       expect(contract).toHaveProperty('id', 1)
       expect(contract).toHaveProperty('Client')
       expect(contract).toHaveProperty('Contractor')
@@ -12,7 +12,7 @@ describe('getClientContractById', () => {
   })
 
   it('should throw an error if the contract does not belong to the user', async () => {
-    await getClientContractById(1, 3).catch((err) => {
+    await getProfileContractById(1, 3).catch((err) => {
       expect(err).toHaveProperty('statusCode', 404)
       expect(err).toHaveProperty('message', 'Contract #3 not found')
     })
