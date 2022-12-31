@@ -1,3 +1,8 @@
+# WIP! 
+This is the typescript version of the backend exercise
+It should work running as DEV, but the build is not working yet.
+Tests are not implemented yet
+
 # DEEL BACKEND TASK
 
   

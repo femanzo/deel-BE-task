@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const utils_1 = require("../utils");
 const services_1 = require("../services");
+const utils_1 = require("../utils");
 const { getProfileById } = services_1.dbServices;
 /*
  * Check for valid profile_id in header
@@ -15,7 +15,7 @@ exports.default = async (req, res, next) => {
         return next(missingProfileIdError);
     }
     try {
-        const profile = await getProfileById(profile_id);
+        const profile = await getProfileById(Number(profile_id));
         if (!profile) {
             const profileNotFoundError = new utils_1.ApiError(`Profile with id ${profile_id} could not be found`, 401);
             return next(profileNotFoundError);

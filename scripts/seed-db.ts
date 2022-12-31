@@ -1,11 +1,11 @@
+import { sequelize } from '../src/db'
+
 const {
-  sequelize: {
-    models: { Profile, Contract, Job },
-  },
-} = require('../src/db')
+  models: { Profile, Contract, Job },
+} = sequelize
 
 /* WARNING THIS WILL DROP THE CURRENT DATABASE */
-async function seed() {
+export async function seed() {
   // create tables
   await Profile.sync({ force: true })
   await Contract.sync({ force: true })

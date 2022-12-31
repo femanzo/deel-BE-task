@@ -17,7 +17,7 @@
     "build": "npx tsc",
     "start": "node dist/index.js",
     "dev": "node -r @swc-node/register src/server.ts",
-    "seed": "node ./scripts/seeder.js",
+    "seed": "node -r @swc-node/register scripts/seeder.ts",
     "test": "jest"
   },
   "devDependencies": {

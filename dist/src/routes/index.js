@@ -8,8 +8,9 @@ const contracts_router_1 = __importDefault(require("./contracts-router"));
 const jobs_router_1 = __importDefault(require("./jobs-router"));
 const balances_router_1 = __importDefault(require("./balances-router"));
 const admin_router_1 = __importDefault(require("./admin-router"));
-exports.default = (0, express_1.Router)()
+const router = (0, express_1.Router)()
     .use('/contracts', contracts_router_1.default)
     .use('/jobs', jobs_router_1.default)
     .use('/balances', balances_router_1.default)
     .use('/admin', admin_router_1.default);
+exports.default = router;

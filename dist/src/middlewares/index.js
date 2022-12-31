@@ -22,7 +22,13 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.errorHandler = exports.getProfile = void 0;
-exports.getProfile = __importStar(require("./get-profile"));
+exports.validateQuery = exports.getProfile = exports.errorHandler = void 0;
+const get_profile_1 = __importDefault(require("./get-profile"));
+exports.getProfile = get_profile_1.default;
+const query_validator_1 = require("./query-validator");
+Object.defineProperty(exports, "validateQuery", { enumerable: true, get: function () { return query_validator_1.validateQuery; } });
 exports.errorHandler = __importStar(require("./error-handler"));
