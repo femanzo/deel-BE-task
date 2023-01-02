@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.safeMultiply = exports.safeSubtract = exports.safeAdd = void 0;
+exports.safeToFixed = exports.safeMultiply = exports.safeSubtract = exports.safeAdd = void 0;
 const decimal_js_1 = require("decimal.js");
 /**
  * Adds two numbers avoiding floating point errors
@@ -9,7 +9,7 @@ const decimal_js_1 = require("decimal.js");
  * @returns {number} a + b
  */
 const safeAdd = (a, b) => {
-    return Number(new decimal_js_1.Decimal(a).add(b));
+    return new decimal_js_1.Decimal(a).add(b).toNumber();
 };
 exports.safeAdd = safeAdd;
 /**
@@ -19,7 +19,7 @@ exports.safeAdd = safeAdd;
  * @returns {number} a - b
  */
 const safeSubtract = (a, b) => {
-    return Number(new decimal_js_1.Decimal(a).sub(b));
+    return new decimal_js_1.Decimal(a).sub(b).toNumber();
 };
 exports.safeSubtract = safeSubtract;
 /**
@@ -29,6 +29,16 @@ exports.safeSubtract = safeSubtract;
  * @returns {number} a * b
  */
 const safeMultiply = (a, b) => {
-    return Number(new decimal_js_1.Decimal(a).mul(b));
+    return new decimal_js_1.Decimal(a).mul(b).toNumber();
 };
 exports.safeMultiply = safeMultiply;
+/**
+ * Round the number to the specified number of decimal places
+ * @param {number} amount
+ * @param {number} decimals
+ * @returns {number} 2.12345 => 2.12
+ */
+const safeToFixed = (amount, decimals) => {
+    return new decimal_js_1.Decimal(amount).toDecimalPlaces(decimals).toNumber();
+};
+exports.safeToFixed = safeToFixed;

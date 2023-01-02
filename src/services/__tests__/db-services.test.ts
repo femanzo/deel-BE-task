@@ -8,8 +8,8 @@ describe('getProfileContractById', () => {
   it('should return the contract if it belongs to the user', async () => {
     await getProfileContractById(1, 1).then((contract) => {
       expect(contract).toHaveProperty('id', 1)
-      expect(contract).toHaveProperty('Client')
-      expect(contract).toHaveProperty('Contractor')
+      expect(contract).toHaveProperty('client')
+      expect(contract).toHaveProperty('contractor')
     })
   })
 

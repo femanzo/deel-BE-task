@@ -5,15 +5,21 @@ const services_1 = require("../services");
 const utils_1 = require("../utils");
 const { getBestClients, getBestProfession } = services_1.adminServices;
 const getBestClientsRequest = async (req, res, next) => {
-    const { start, end, limit } = req.query;
+    const { start, end } = req.query;
     if (!start)
         return next(new utils_1.ApiError(`Param 'start' is required`, 400));
     if (!end)
         return next(new utils_1.ApiError(`Param 'end' is required`, 400));
+    let limit = 2;
+    if (req.query.limit) {
+        limit = Number(req.query.limit);
+        if (limit === 0)
+            limit = 2;
+    }
     const startDate = new Date(start);
     const endDate = new Date(end);
     try {
-        const result = await getBestClients(startDate, endDate, Number(limit));
+        const result = await getBestClients(startDate, endDate, limit);
         return res.json(result);
     }
     catch (err) {

@@ -4,7 +4,7 @@ exports.getTotalOfJobsToPay = exports.transferFunds = exports.removeFromBalance 
 const db_1 = require("../db");
 const utils_1 = require("../utils");
 const db_services_1 = require("./db-services");
-const { models: { Contract, Job }, } = db_1.sequelize;
+const models_1 = require("../models");
 /**
  * Deposit funds to a client's profile
  * @param {number} userId
@@ -21,6 +21,8 @@ const depositFunds = async (userId, amount) => {
         const updatedProfile = await db_1.sequelize.transaction(async (t) => {
             const totalPendingAmount = await (0, exports.getTotalOfJobsToPay)(userId, t);
             const profile = await (0, db_services_1.getProfileById)(userId, t);
+            if (profile.type !== 'client')
+                throw new utils_1.ApiError('Only clients can deposit funds', 400);
             const updatedBalance = (0, utils_1.safeAdd)(profile.balance, amount);
             const maxAmount = (0, utils_1.safeMultiply)(totalPendingAmount, 1.25);
             if (updatedBalance > maxAmount) {
@@ -31,8 +33,8 @@ const depositFunds = async (userId, amount) => {
                 }
                 throw new utils_1.ApiError(maxDepositErrorMsg, 400);
             }
-            const { balance } = await (0, exports.addToBalance)(userId, amount, t);
-            return { message: `$${amount} deposited successfully, your new balance is ${balance}` };
+            await (0, exports.addToBalance)(userId, amount, t);
+            return { message: `$${amount} deposited successfully` };
         });
         return updatedProfile;
     }
@@ -54,6 +56,8 @@ const addToBalance = async (profileId, amount, transaction = null) => {
     if (!amount || amount < 0)
         throw new Error('invalid amount');
     const profile = await (0, db_services_1.getProfileById)(profileId, transaction);
+    if (!profile)
+        throw new Error(`Profile #${profileId} not found`);
     profile.balance = (0, utils_1.safeAdd)(profile.balance, amount);
     await profile.save({ transaction });
     return profile;
@@ -108,18 +112,21 @@ exports.transferFunds = transferFunds;
 const getTotalOfJobsToPay = async (clientId, transaction = null) => {
     if (!clientId)
         throw new Error('clientId required');
-    const [{ total }] = await Contract.findAll({
+    const totalPending = (await models_1.Contract.findAll({
         where: { ClientId: clientId },
         include: [
             {
-                model: Job.scope('unpaid'),
+                model: models_1.Job.scope('unpaid'),
                 attributes: [],
             },
         ],
         raw: true,
         attributes: [[db_1.sequelize.fn('sum', db_1.sequelize.col('price')), 'total']],
         transaction,
-    });
-    return total || 0;
+    }));
+    if (!totalPending || !totalPending[0])
+        return 0;
+    const [{ total }] = totalPending;
+    return total;
 };
 exports.getTotalOfJobsToPay = getTotalOfJobsToPay;

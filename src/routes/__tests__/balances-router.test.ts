@@ -13,10 +13,7 @@ describe('Balances Routes', () => {
         })
         .expect(200)
         .then((res) => {
-          expect(res.body).toHaveProperty(
-            'message',
-            '$100 deposited successfully, your new balance is 101.3'
-          )
+          expect(res.body).toHaveProperty('message', '$100 deposited successfully')
         })
     })
 
@@ -28,10 +25,7 @@ describe('Balances Routes', () => {
         })
         .expect(200)
         .then((res) => {
-          expect(res.body).toHaveProperty(
-            'message',
-            '$12.012 deposited successfully, your new balance is 113.312'
-          )
+          expect(res.body).toHaveProperty('message', '$12.012 deposited successfully')
         })
     })
 
@@ -43,7 +37,10 @@ describe('Balances Routes', () => {
         })
         .expect(400)
         .then((res) => {
-          expect(res.body).toHaveProperty('message', 'You cannot deposit more than $136.688')
+          expect(res.body).toHaveProperty(
+            'message',
+            'The deposit amount is greater than the max permitted amount'
+          )
         })
     })
   })

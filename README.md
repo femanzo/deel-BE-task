@@ -3,6 +3,22 @@ This is the typescript version of the backend exercise
 It should work running as DEV, but the build is not working yet.
 Tests are not implemented yet
 
+# How to use it
+
+clone the repo
+```
+cd into the folder
+npm install
+npm run seed
+npm run dev
+```
+
+for production env 
+```
+npm run build
+npm start
+```
+
 # DEEL BACKEND TASK
 
   

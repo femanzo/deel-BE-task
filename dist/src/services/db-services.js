@@ -2,9 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getUserNonTerminantedContracts = exports.getProfileContractById = exports.getJobById = exports.getProfileById = void 0;
 const sequelize_1 = require("sequelize");
-const db_1 = require("../db");
-const utils_1 = require("../utils");
-const { models: { Profile, Contract, Job }, } = db_1.sequelize;
+const models_1 = require("../models");
 /**
  * Get a profile by id
  * @param {number} profileId
@@ -13,30 +11,23 @@ const { models: { Profile, Contract, Job }, } = db_1.sequelize;
  * @throws {Error} - If profile is not found
  */
 const getProfileById = async (profileId, transaction = null) => {
-    if (!profileId) {
-        throw new utils_1.ApiError('profileId is required', 400);
-    }
-    const profile = await Profile.findByPk(profileId, { transaction });
-    (0, utils_1.assertRecordFound)(profile, 'Profile', profileId);
+    if (!profileId)
+        throw new Error('profileId is required');
+    const profile = await models_1.Profile.findByPk(profileId, { transaction, rejectOnEmpty: true });
     return profile;
 };
 exports.getProfileById = getProfileById;
 /**
  * Get a job by id
  * @param {number} jobId
- * @param {number} clientId
  * @param {Sequelize.Transaction} transaction - The transaction to use
  * @returns {Promise<Job>}
  * @throws {Error} - If job is not found
  */
-const getJobById = async (jobId, clientId, transaction = null) => {
+const getJobById = async (jobId, transaction = null) => {
     if (!jobId)
         throw new Error('jobId is required');
-    const job = await Job.findByPk(jobId, {
-        where: { ClientId: clientId },
-        transaction,
-    });
-    (0, utils_1.assertRecordFound)(job, 'Job', jobId);
+    const job = await models_1.Job.findByPk(jobId, { transaction, include: ['contract'] });
     return job;
 };
 exports.getJobById = getJobById;
@@ -53,15 +44,15 @@ const getProfileContractById = async (profileId, contractId, transaction = null)
         throw new Error('profileId is required');
     if (!contractId)
         throw new Error('contractId is required');
-    const contract = await Contract.findOne({
+    const contract = await models_1.Contract.findOne({
         where: {
             id: contractId,
             [sequelize_1.Op.or]: [{ ClientId: profileId }, { ContractorId: profileId }],
         },
-        include: ['Client', 'Contractor'],
+        include: ['client', 'contractor', 'jobs'],
         transaction,
+        rejectOnEmpty: true,
     });
-    (0, utils_1.assertRecordFound)(contract, 'Contract', contractId);
     return contract;
 };
 exports.getProfileContractById = getProfileContractById;
@@ -71,14 +62,11 @@ exports.getProfileContractById = getProfileContractById;
  * @returns {Promise<Contract[]>} - The contracts that belong to the profile
  */
 const getUserNonTerminantedContracts = async (profileId) => {
-    const contracts = await Contract.scope('pending').findAll({
+    const contracts = await models_1.Contract.scope('pending').findAll({
         where: {
             [sequelize_1.Op.or]: [{ ClientId: profileId }, { ContractorId: profileId }],
         },
-        attributes: {
-            exclude: ['ClientId', 'ContractorId'],
-        },
-        include: ['Client', 'Contractor'],
+        include: ['client', 'contractor', 'jobs'],
     });
     return contracts;
 };

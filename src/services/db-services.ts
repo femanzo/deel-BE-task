@@ -1,6 +1,7 @@
 import { Op, Transaction } from 'sequelize'
 
 import { Job, Profile, Contract } from '../models'
+import { assertRecordFound } from '../utils'
 
 /**
  * Get a profile by id
@@ -12,7 +13,9 @@ import { Job, Profile, Contract } from '../models'
 export const getProfileById = async (profileId: number, transaction: Transaction | null = null) => {
   if (!profileId) throw new Error('profileId is required')
 
-  const profile = await Profile.findByPk(profileId, { transaction, rejectOnEmpty: true })
+  const profile = await Profile.findByPk(profileId, { transaction })
+
+  assertRecordFound(profile, 'Profile', profileId)
 
   return profile
 }
@@ -55,8 +58,9 @@ export const getProfileContractById = async (
     },
     include: ['client', 'contractor', 'jobs'],
     transaction,
-    rejectOnEmpty: true,
   })
+
+  assertRecordFound(contract, 'Contract', contractId)
 
   return contract
 }

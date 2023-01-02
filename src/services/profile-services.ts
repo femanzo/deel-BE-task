@@ -32,7 +32,7 @@ export const depositFunds = async (userId: number, amount: number) => {
       if (updatedBalance > maxAmount) {
         const maxDepositAmount = safeSubtract(maxAmount, profile.balance)
 
-        let maxDepositErrorMsg = `You cannot deposit more than $${maxDepositAmount}`
+        let maxDepositErrorMsg = `The deposit amount is greater than the max permitted amount`
         if (maxDepositAmount <= 0) {
           maxDepositErrorMsg = `You have reached the deposit limit`
         }

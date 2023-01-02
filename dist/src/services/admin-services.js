@@ -75,12 +75,10 @@ const getBestProfession = async (startDate, endDate) => {
     const profileEarnings = await Profile.findAll({
         include: [
             {
-                attributes: [],
                 model: Contract,
                 as: 'Contractor',
                 include: [
                     {
-                        attributes: [],
                         model: Job.scope('paid'),
                         where: {
                             paymentDate: {
@@ -95,13 +93,16 @@ const getBestProfession = async (startDate, endDate) => {
             },
         ],
         group: ['profession'],
-        order: [[db_1.sequelize.literal('totalEarnings'), 'DESC']],
         attributes: ['profession', [db_1.sequelize.fn('sum', db_1.sequelize.col('price')), 'totalEarnings']],
+        order: [[db_1.sequelize.literal('totalEarnings'), 'DESC']],
     });
-    const [highestEarningProfession] = profileEarnings;
-    if (!highestEarningProfession) {
+    const [profession] = profileEarnings;
+    if (!profession) {
         throw new utils_1.ApiError(`Not enough data to calculate the best profession.`, 404);
     }
-    return highestEarningProfession;
+    return {
+        profession: profession.dataValues.profession,
+        totalEarnings: profession.dataValues.totalEarnings,
+    };
 };
 exports.getBestProfession = getBestProfession;

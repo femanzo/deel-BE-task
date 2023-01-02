@@ -7,6 +7,7 @@ const app_1 = __importDefault(require("./app"));
 init();
 async function init() {
     try {
+        // await sequelize.sync({ force: true })
         app_1.default.listen(3001, () => {
             console.log('Express App Listening on Port 3001');
         });

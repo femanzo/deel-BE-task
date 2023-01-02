@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.seed = void 0;
 const db_1 = require("../src/db");
-const { models: { Profile, Contract, Job }, } = db_1.sequelize;
+const { Profile, Contract, Job } = db_1.sequelize.models;
 /* WARNING THIS WILL DROP THE CURRENT DATABASE */
 async function seed() {
     // create tables

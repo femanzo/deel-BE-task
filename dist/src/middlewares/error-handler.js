@@ -8,6 +8,7 @@ exports.errorResponder = exports.errorLogger = void 0;
  */
 const errorLogger = (error, req, res, next) => {
     console.log(`error ${error.statusCode || ''}: ${error.message}`);
+    console.error(error);
     return next(error);
 };
 exports.errorLogger = errorLogger;
