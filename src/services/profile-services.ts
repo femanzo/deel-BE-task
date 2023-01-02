@@ -24,6 +24,8 @@ export const depositFunds = async (userId: number, amount: number) => {
 
       const profile = await getProfileById(userId, t)
 
+      if (!profile) throw new ApiError('Profile not found', 404)
+
       if (profile.type !== 'client') throw new ApiError('Only clients can deposit funds', 400)
 
       const updatedBalance = safeAdd(profile.balance, amount)
@@ -93,6 +95,8 @@ export const removeFromBalance = async (
   if (!amount || amount < 0) throw new Error('invalid amount')
 
   const profile = await getProfileById(profileId, transaction)
+  if (!profile) throw new ApiError(`Profile #${profileId} not found`, 404)
+
   profile.balance = safeSubtract(profile.balance, amount)
 
   if (profile.balance < 0) throw new ApiError('Insufficient funds', 400)

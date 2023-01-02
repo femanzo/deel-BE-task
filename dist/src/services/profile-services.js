@@ -21,13 +21,15 @@ const depositFunds = async (userId, amount) => {
         const updatedProfile = await db_1.sequelize.transaction(async (t) => {
             const totalPendingAmount = await (0, exports.getTotalOfJobsToPay)(userId, t);
             const profile = await (0, db_services_1.getProfileById)(userId, t);
+            if (!profile)
+                throw new utils_1.ApiError('Profile not found', 404);
             if (profile.type !== 'client')
                 throw new utils_1.ApiError('Only clients can deposit funds', 400);
             const updatedBalance = (0, utils_1.safeAdd)(profile.balance, amount);
             const maxAmount = (0, utils_1.safeMultiply)(totalPendingAmount, 1.25);
             if (updatedBalance > maxAmount) {
                 const maxDepositAmount = (0, utils_1.safeSubtract)(maxAmount, profile.balance);
-                let maxDepositErrorMsg = `You cannot deposit more than $${maxDepositAmount}`;
+                let maxDepositErrorMsg = `The deposit amount is greater than the max permitted amount`;
                 if (maxDepositAmount <= 0) {
                     maxDepositErrorMsg = `You have reached the deposit limit`;
                 }
@@ -76,6 +78,8 @@ const removeFromBalance = async (profileId, amount, transaction = null) => {
     if (!amount || amount < 0)
         throw new Error('invalid amount');
     const profile = await (0, db_services_1.getProfileById)(profileId, transaction);
+    if (!profile)
+        throw new utils_1.ApiError(`Profile #${profileId} not found`, 404);
     profile.balance = (0, utils_1.safeSubtract)(profile.balance, amount);
     if (profile.balance < 0)
         throw new utils_1.ApiError('Insufficient funds', 400);

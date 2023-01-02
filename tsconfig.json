@@ -12,5 +12,8 @@
     "typeRoots": [
       "./types",
     ]
-  }
+  },
+  "exclude": [
+    "src/**/*.test.ts"
+  ],
 }

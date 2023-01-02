@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.getUserNonTerminantedContracts = exports.getProfileContractById = exports.getJobById = exports.getProfileById = void 0;
 const sequelize_1 = require("sequelize");
 const models_1 = require("../models");
+const utils_1 = require("../utils");
 /**
  * Get a profile by id
  * @param {number} profileId
@@ -13,7 +14,8 @@ const models_1 = require("../models");
 const getProfileById = async (profileId, transaction = null) => {
     if (!profileId)
         throw new Error('profileId is required');
-    const profile = await models_1.Profile.findByPk(profileId, { transaction, rejectOnEmpty: true });
+    const profile = await models_1.Profile.findByPk(profileId, { transaction });
+    (0, utils_1.assertRecordFound)(profile, 'Profile', profileId);
     return profile;
 };
 exports.getProfileById = getProfileById;
@@ -51,8 +53,8 @@ const getProfileContractById = async (profileId, contractId, transaction = null)
         },
         include: ['client', 'contractor', 'jobs'],
         transaction,
-        rejectOnEmpty: true,
     });
+    (0, utils_1.assertRecordFound)(contract, 'Contract', contractId);
     return contract;
 };
 exports.getProfileContractById = getProfileContractById;
