@@ -1,4 +1,6 @@
-const { safeAdd, safeSubtract } = require('./safe-math')
+import { expect, describe, it } from '@jest/globals'
+
+import { safeAdd, safeSubtract, safeToFixed } from '../safe-math'
 
 describe('Safe Math', () => {
   it('should add two numbers', () => {
@@ -25,4 +27,14 @@ describe('Safe Math', () => {
     const result = safeSubtract(1.02, 1)
     expect(result).toBe(0.02)
   })
+
+  //  describe('safeToFixed', () => {
+  it('should return a number with the precision defined', () => {
+    expect(safeToFixed(1.12345, 0)).toBe(1)
+    expect(safeToFixed(1.12345, 1)).toBe(1.1)
+    expect(safeToFixed(1.12345, 2)).toBe(1.12)
+    expect(safeToFixed(1.12345, 3)).toBe(1.123)
+  })
+
+  //})
 })

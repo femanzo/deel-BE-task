@@ -1,42 +1,28 @@
-import { type Sequelize, Model, Op, TEXT, BOOLEAN, DECIMAL, DATE } from 'sequelize'
+import 'reflect-metadata'
 
-class Job extends Model {}
+import { Op } from 'sequelize'
 
-export default (sequelize: Sequelize) =>
-  Job.init(
-    {
-      description: {
-        type: TEXT,
-        allowNull: false,
-      },
-      price: {
-        type: DECIMAL(12, 2),
-        allowNull: false,
-      },
-      paid: {
-        type: BOOLEAN,
-        defaultValue: false,
-      },
-      paymentDate: {
-        type: DATE,
-      },
-    },
-    {
-      scopes: {
-        unpaid: {
-          where: {
-            paid: {
-              [Op.or]: [false, null],
-            },
-          },
-        },
-        paid: {
-          where: {
-            paid: true,
-          },
-        },
-      },
-      sequelize,
-      modelName: 'Job',
-    }
-  )
+import { Table, Scopes, Column, Model, ForeignKey, BelongsTo } from 'sequelize-typescript'
+
+import { Contract } from './'
+
+@Table({
+  timestamps: true,
+})
+@Scopes(() => ({
+  unpaid: { where: { paid: { [Op.or]: [false, null] } } },
+  paid: { where: { paid: true } },
+}))
+export class Job extends Model {
+  @Column declare description: string
+  @Column declare price: number
+  @Column declare paid: boolean
+  @Column declare paymentDate: Date
+
+  @ForeignKey(() => Contract)
+  @Column
+  declare ContractId: number
+
+  @BelongsTo(() => Contract, { foreignKey: 'ContractId' })
+  declare contract: Awaited<Contract>
+}

@@ -4,14 +4,11 @@ import compression from 'compression'
 import cors from 'cors'
 import helmet from 'helmet'
 
-import { sequelize } from './db'
 import rootRouter from './routes'
 import { errorHandler } from './middlewares'
 
 const app = express()
 const { errorLogger, errorResponder } = errorHandler
-
-app.set('sequelize', sequelize)
 
 /**
  * Keep it safe!

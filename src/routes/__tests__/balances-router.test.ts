@@ -1,6 +1,7 @@
-const request = require('supertest')
+import { expect, describe, it } from '@jest/globals'
+import request from 'supertest'
 
-const app = require('../../app')
+import app from '../../app'
 
 describe('Balances Routes', () => {
   describe('POST /balances/deposit/:userId', () => {

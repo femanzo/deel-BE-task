@@ -1,28 +1,39 @@
-import { Sequelize, Model, Op, ENUM, TEXT } from 'sequelize'
+import { Op } from 'sequelize'
+import { Table, Scopes, Column, Model, HasMany, ForeignKey, BelongsTo } from 'sequelize-typescript'
 
-class Contract extends Model {}
+import { Job, Profile } from './'
 
-export default (sequelize: Sequelize) =>
-  Contract.init(
-    {
-      terms: {
-        type: TEXT,
-        allowNull: false,
-      },
-      status: {
-        type: ENUM('new', 'in_progress', 'terminated'),
-      },
-    },
-    {
-      scopes: {
-        pending: {
-          where: { status: { [Op.not]: 'terminated' } },
-        },
-        active: {
-          where: { status: 'in_progress' },
-        },
-      },
-      sequelize,
-      modelName: 'Contract',
-    }
-  )
+enum ContractStatus {
+  NEW = 'new',
+  IN_PROGRESS = 'in_progress',
+  TERMINATED = 'terminated',
+}
+
+@Table({
+  timestamps: true,
+})
+@Scopes(() => ({
+  pending: { where: { status: { [Op.not]: ContractStatus.TERMINATED } } },
+  active: { where: { status: ContractStatus.IN_PROGRESS } },
+}))
+export class Contract extends Model {
+  @Column declare terms: string
+  @Column declare status: ContractStatus
+
+  @HasMany(() => Job, { foreignKey: 'ContractId' })
+  declare jobs: Awaited<Job[]>
+
+  @ForeignKey(() => Profile)
+  @Column
+  declare ClientId: number
+
+  @BelongsTo(() => Profile, { foreignKey: 'ClientId' })
+  declare client: Awaited<Profile>
+
+  @ForeignKey(() => Profile)
+  @Column
+  declare ContractorId: number
+
+  @BelongsTo(() => Profile, { foreignKey: 'ContractorId' })
+  declare contractor: Awaited<Profile>
+}

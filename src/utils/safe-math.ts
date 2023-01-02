@@ -7,7 +7,7 @@ import { Decimal } from 'decimal.js'
  * @returns {number} a + b
  */
 export const safeAdd = (a: number, b: number) => {
-  return Number(new Decimal(a).add(b))
+  return new Decimal(a).add(b).toNumber()
 }
 
 /**
@@ -17,7 +17,7 @@ export const safeAdd = (a: number, b: number) => {
  * @returns {number} a - b
  */
 export const safeSubtract = (a: number, b: number) => {
-  return Number(new Decimal(a).sub(b))
+  return new Decimal(a).sub(b).toNumber()
 }
 
 /**
@@ -27,5 +27,15 @@ export const safeSubtract = (a: number, b: number) => {
  * @returns {number} a * b
  */
 export const safeMultiply = (a: number, b: number) => {
-  return Number(new Decimal(a).mul(b))
+  return new Decimal(a).mul(b).toNumber()
+}
+
+/**
+ * Round the number to the specified number of decimal places
+ * @param {number} amount
+ * @param {number} decimals
+ * @returns {number} 2.12345 => 2.12
+ */
+export const safeToFixed = (amount: number, decimals: number) => {
+  return new Decimal(amount).toDecimalPlaces(decimals).toNumber()
 }

@@ -1,6 +1,8 @@
-const {
-  dbServices: { getProfileContractById, getUserNonTerminantedContracts },
-} = require('..')
+import { expect, describe, it } from '@jest/globals'
+
+import { dbServices } from '..'
+
+const { getProfileContractById, getUserNonTerminantedContracts } = dbServices
 
 describe('getProfileContractById', () => {
   it('should return the contract if it belongs to the user', async () => {

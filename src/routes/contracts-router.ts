@@ -4,5 +4,5 @@ import { contractsController } from '../controllers'
 import { getProfile } from '../middlewares'
 
 export default Router()
-  .get<{ profile: any }>('/', getProfile, contractsController.getUserNonTerminantedContractsRequest)
+  .get('/', getProfile, contractsController.getUserNonTerminantedContractsRequest)
   .get('/:id', getProfile, contractsController.getProfileContractByIdRequest)

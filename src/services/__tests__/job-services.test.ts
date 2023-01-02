@@ -1,7 +1,9 @@
-const {
-  jobServices: { payJob },
-  profileServices: { depositFunds },
-} = require('../')
+import { expect, describe, it } from '@jest/globals'
+
+import { jobServices, profileServices } from '..'
+
+const { payJob } = jobServices
+const { depositFunds } = profileServices
 
 describe('payJob', () => {
   it('should successfully pay for the job', async () => {

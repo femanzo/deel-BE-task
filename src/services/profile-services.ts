@@ -4,9 +4,7 @@ import { sequelize } from '../db'
 import { safeMultiply, safeAdd, safeSubtract, ApiError } from '../utils'
 import { getProfileById } from './db-services'
 
-const {
-  models: { Contract, Job },
-} = sequelize
+import { Job, Contract } from '../models'
 
 /**
  * Deposit funds to a client's profile
@@ -26,6 +24,8 @@ export const depositFunds = async (userId: number, amount: number) => {
 
       const profile = await getProfileById(userId, t)
 
+      if (profile.type !== 'client') throw new ApiError('Only clients can deposit funds', 400)
+
       const updatedBalance = safeAdd(profile.balance, amount)
       const maxAmount = safeMultiply(totalPendingAmount, 1.25)
 
@@ -40,9 +40,9 @@ export const depositFunds = async (userId: number, amount: number) => {
         throw new ApiError(maxDepositErrorMsg, 400)
       }
 
-      const { balance } = await addToBalance(userId, amount, t)
+      await addToBalance(userId, amount, t)
 
-      return { message: `$${amount} deposited successfully, your new balance is ${balance}` }
+      return { message: `$${amount} deposited successfully` }
     })
 
     return updatedProfile
@@ -67,7 +67,11 @@ export const addToBalance = async (
   if (!amount || amount < 0) throw new Error('invalid amount')
 
   const profile = await getProfileById(profileId, transaction)
+
+  if (!profile) throw new Error(`Profile #${profileId} not found`)
+
   profile.balance = safeAdd(profile.balance, amount)
+
   await profile.save({ transaction })
 
   return profile
@@ -132,7 +136,7 @@ export const getTotalOfJobsToPay = async (
 ) => {
   if (!clientId) throw new Error('clientId required')
 
-  const [{ total }] = await Contract.findAll({
+  const totalPending = (await Contract.findAll({
     where: { ClientId: clientId },
     include: [
       {
@@ -143,7 +147,10 @@ export const getTotalOfJobsToPay = async (
     raw: true,
     attributes: [[sequelize.fn('sum', sequelize.col('price')), 'total']],
     transaction,
-  })
+  })) as unknown as { total: number }[]
 
-  return total || 0
+  if (!totalPending || !totalPending[0]) return 0
+
+  const [{ total }] = totalPending
+  return total
 }

@@ -1,11 +1,6 @@
 import { Op, Transaction } from 'sequelize'
 
-import { sequelize } from '../db'
-import { assertRecordFound, ApiError } from '../utils'
-
-const {
-  models: { Profile, Contract, Job },
-} = sequelize
+import { Job, Profile, Contract } from '../models'
 
 /**
  * Get a profile by id
@@ -15,37 +10,25 @@ const {
  * @throws {Error} - If profile is not found
  */
 export const getProfileById = async (profileId: number, transaction: Transaction | null = null) => {
-  if (!profileId) {
-    throw new ApiError('profileId is required', 400)
-  }
+  if (!profileId) throw new Error('profileId is required')
 
-  const profile = await Profile.findByPk(profileId, { transaction })
+  const profile = await Profile.findByPk(profileId, { transaction, rejectOnEmpty: true })
 
-  assertRecordFound(profile, 'Profile', profileId)
   return profile
 }
 
 /**
  * Get a job by id
  * @param {number} jobId
- * @param {number} clientId
  * @param {Sequelize.Transaction} transaction - The transaction to use
  * @returns {Promise<Job>}
  * @throws {Error} - If job is not found
  */
-export const getJobById = async (
-  jobId: number,
-  clientId: number,
-  transaction: Transaction | null = null
-) => {
+export const getJobById = async (jobId: number, transaction: Transaction | null = null) => {
   if (!jobId) throw new Error('jobId is required')
 
-  const job = await Job.findByPk(jobId, {
-    where: { ClientId: clientId },
-    transaction,
-  })
+  const job = await Job.findByPk(jobId, { transaction, include: ['contract'] })
 
-  assertRecordFound(job, 'Job', jobId)
   return job
 }
 
@@ -70,11 +53,10 @@ export const getProfileContractById = async (
       id: contractId,
       [Op.or]: [{ ClientId: profileId }, { ContractorId: profileId }],
     },
-    include: ['Client', 'Contractor'],
+    include: ['client', 'contractor', 'jobs'],
     transaction,
+    rejectOnEmpty: true,
   })
-
-  assertRecordFound(contract, 'Contract', contractId)
 
   return contract
 }
@@ -89,10 +71,7 @@ export const getUserNonTerminantedContracts = async (profileId: number) => {
     where: {
       [Op.or]: [{ ClientId: profileId }, { ContractorId: profileId }],
     },
-    attributes: {
-      exclude: ['ClientId', 'ContractorId'],
-    },
-    include: ['Client', 'Contractor'],
+    include: ['client', 'contractor', 'jobs'],
   })
 
   return contracts

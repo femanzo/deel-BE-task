@@ -1,7 +1,8 @@
-const request = require('supertest')
-const assert = require('assert')
+import { expect, describe, it } from '@jest/globals'
+import request from 'supertest'
+import assert from 'node:assert'
 
-const app = require('../../app')
+import app from '../../app'
 
 describe('Contracts Routes', () => {
   /* TODO: This test should be moved to a separate file */
@@ -12,7 +13,7 @@ describe('Contracts Routes', () => {
   it("should return NotFound 404 error if contract's ID does not belong to user", async () => {
     await request(app)
       .get('/contracts/1')
-      .set('profile_id', 2)
+      .set('profile_id', '2')
       .set('Accept', 'application/json')
       .expect('Content-Type', /json/)
       .expect(404)
@@ -21,7 +22,7 @@ describe('Contracts Routes', () => {
   it('should return the contract only if it belongs to the profile calling', async () => {
     await request(app)
       .get('/contracts/1')
-      .set('profile_id', 1)
+      .set('profile_id', '1')
       .set('Accept', 'application/json')
       .expect('Content-Type', /json/)
       .expect(200)
@@ -30,7 +31,7 @@ describe('Contracts Routes', () => {
   it('should return only contracts belonging to the logged user', async () => {
     await request(app)
       .get('/contracts')
-      .set('profile_id', 1)
+      .set('profile_id', '1')
       .set('Accept', 'application/json')
       .expect('Content-Type', /json/)
       .expect(200)
@@ -39,7 +40,7 @@ describe('Contracts Routes', () => {
   it('should only contain non terminated contracts', async () => {
     await request(app)
       .get('/contracts')
-      .set('profile_id', 1)
+      .set('profile_id', '1')
       .set('Accept', 'application/json')
       .expect('Content-Type', /json/)
       .expect(200)

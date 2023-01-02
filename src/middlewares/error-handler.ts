@@ -1,4 +1,5 @@
 import type { Request, Response, NextFunction } from 'express'
+
 import type { ApiError } from '../utils'
 
 /*
@@ -8,6 +9,7 @@ import type { ApiError } from '../utils'
  */
 export const errorLogger = (error: ApiError, req: Request, res: Response, next: NextFunction) => {
   console.log(`error ${error.statusCode || ''}: ${error.message}`)
+  console.error(error)
   return next(error)
 }
 

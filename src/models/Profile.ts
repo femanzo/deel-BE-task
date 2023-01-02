@@ -1,31 +1,34 @@
-import { type Sequelize, Model, STRING, DECIMAL, ENUM } from 'sequelize'
+import 'reflect-metadata'
 
-class Profile extends Model {}
+import { DECIMAL } from 'sequelize'
 
-export default (sequelize: Sequelize) =>
-  Profile.init(
-    {
-      firstName: {
-        type: STRING,
-        allowNull: false,
-      },
-      lastName: {
-        type: STRING,
-        allowNull: false,
-      },
-      profession: {
-        type: STRING,
-        allowNull: false,
-      },
-      balance: {
-        type: DECIMAL(12, 2),
-      },
-      type: {
-        type: ENUM('client', 'contractor'),
-      },
-    },
-    {
-      sequelize,
-      modelName: 'Profile',
-    }
-  )
+import { Table, Column, Model, HasMany } from 'sequelize-typescript'
+
+import { Contract } from './'
+
+enum ProfileTypes {
+  CLIENT = 'client',
+  CONTRACTOR = 'contractor',
+}
+
+@Table
+export class Profile extends Model {
+  @Column({ allowNull: false })
+  declare firstName: string
+
+  @Column({ allowNull: false })
+  declare lastName: string
+
+  @Column({ allowNull: false })
+  declare profession: string
+
+  @Column({ type: DECIMAL(12, 2) })
+  declare balance: number
+
+  @Column
+  declare type: ProfileTypes
+
+  @HasMany(() => Contract, { as: 'Contractor', foreignKey: 'ContractorId' })
+  @HasMany(() => Contract, { as: 'Client', foreignKey: 'ClientId' })
+  declare contracts: Awaited<Contract>[]
+}

@@ -1,8 +1,6 @@
 import { sequelize } from '../src/db'
 
-const {
-  models: { Profile, Contract, Job },
-} = sequelize
+const { Profile, Contract, Job } = sequelize.models
 
 /* WARNING THIS WILL DROP THE CURRENT DATABASE */
 export async function seed() {

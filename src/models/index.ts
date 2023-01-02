@@ -1,26 +1,12 @@
-import type { Sequelize } from 'sequelize'
+import { Job } from './Job'
+import { Profile } from './Profile'
+import { Contract } from './Contract'
 
-import contractInit from './Contract'
-import jobInit from './Job'
-import profileInit from './Profile'
+export { Job, Profile, Contract }
 
-export const initModels = (sequelize: Sequelize) => {
-  /**
-   * Execute models initializers
-   */
-  contractInit(sequelize)
-  jobInit(sequelize)
-  profileInit(sequelize)
-
-  /**
-   * Relationships definition
-   */
-  const { Profile, Contract, Job } = sequelize.models
-
-  Profile.hasMany(Contract, { as: 'Contractor', foreignKey: 'ContractorId' })
-  Contract.belongsTo(Profile, { as: 'Contractor' })
-  Profile.hasMany(Contract, { as: 'Client', foreignKey: 'ClientId' })
-  Contract.belongsTo(Profile, { as: 'Client' })
-  Contract.hasMany(Job)
-  Job.belongsTo(Contract)
-}
+// Profile.hasMany(Contract, { as: 'Contractor', foreignKey: 'ContractorId' })
+// Contract.belongsTo(Profile, { as: 'Contractor' })
+// Profile.hasMany(Contract, { as: 'Client', foreignKey: 'ClientId' })
+// Contract.belongsTo(Profile, { as: 'Client' })
+// Contract.hasMany(Job)
+// Job.belongsTo(Contract)
