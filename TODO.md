@@ -42,4 +42,4 @@ Also not specified if anyone can pay for someone else's job. I'm assuming that c
 - Better authentication / authorization
 - Deployment scripts
 - Environment variables
-- Typescript
+- ~Typescript~ (done!)
