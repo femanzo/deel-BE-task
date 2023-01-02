@@ -6,7 +6,9 @@ clone the repo
 cd into the folder
 npm install
 npm run seed
-npm run dev
+npm start
+or 
+npm run dev  (for auto-reload)
 ```
 
 Please, read TODO.md for considerations
