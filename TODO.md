@@ -1,5 +1,6 @@
 # Some considerations for the task
 
+
 ## 1. About the field validation
 I have only added a few basic validations, that could be improved with a more complex validation library.
 
@@ -18,6 +19,8 @@ There are many other tests that could be written, I have only written a few to s
 
 For this task I am reseeding the database before tests, in a real world scenario I would mock the functions to simulate it, but for that, I would need to implement many other services that are not in the scope of this task.
 
+## 1. Extra API
+I have added a ___***GET***___ profile/me route to get user's info for using it with the FE app.
 
 ## 1. This needs to be clarified:
 1. __***POST*** `/balances/deposit/:userId` - Deposits money into the balance of a client, a client can't deposit more than 25% his total of jobs to pay. (at the deposit moment)__

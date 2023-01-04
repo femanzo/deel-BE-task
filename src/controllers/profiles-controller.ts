@@ -18,3 +18,7 @@ export const depositFundsRequest = async (req: Request, res: Response, next: Nex
     return next(err)
   }
 }
+
+export const getMyProfile = async (req: Request, res: Response) => {
+  res.json(req.profile)
+}
